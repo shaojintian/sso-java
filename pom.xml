@@ -33,8 +33,8 @@
         <slf4j-api.version>1.7.25</slf4j-api.version>
         <jedis.version>3.0.0</jedis.version>
 
-        <spring-boot.version>2.0.1.RELEASE</spring-boot.version>
-        <spring.version>4.3.21.RELEASE</spring.version>
+        <spring-boot.version>1.5.8.RELEASE</spring-boot.version>
+        <spring.version>4.3.12.RELEASE</spring.version>
 
     </properties>
 
@@ -47,6 +47,25 @@
             <url>https://opensource.org/licenses/GPL-3.0</url>
         </license>
     </licenses>
+
+    <repositories>
+        <repository>
+            <id>aliyun-repos</id>
+            <url>http://maven.aliyun.com/nexus/content/groups/public/</url>
+            <snapshots>
+                <enabled>false</enabled>
+            </snapshots>
+        </repository>
+    </repositories>
+    <pluginRepositories>
+        <pluginRepository>
+            <id>aliyun-plugin</id>
+            <url>http://maven.aliyun.com/nexus/content/groups/public/</url>
+            <snapshots>
+                <enabled>false</enabled>
+            </snapshots>
+        </pluginRepository>
+    </pluginRepositories>
 
 
 
