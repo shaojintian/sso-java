@@ -1,6 +1,6 @@
-# ProjectName
+# sjt-sso
 
-ProjectName and Description
+a distributed single sign-on framework
 
 <!-- PROJECT SHIELDS -->
 
@@ -25,7 +25,7 @@ ProjectName and Description
 <br />
 
 <p align="center">
-  <a href="https://github.com/shaojintian/Best_README_template/">
+  <a href="https://github.com/shaojintian/sso-java/">
     <img src="docs/images/logo.png" alt="Logo" width="80" height="80">
   </a>
 
@@ -33,14 +33,14 @@ ProjectName and Description
   <p align="center">
     An awesome README template to jumpstart your projects!
     <br />
-    <a href="https://github.com/shaojintian/Best_README_template"><strong>Explore the docs »</strong></a>
+    <a href="https://github.com/shaojintian/sso-java"><strong>Explore the docs »</strong></a>
     <br />
     <br />
-    <a href="https://github.com/shaojintian/Best_README_template"> View Demo</a>
+    <a href="https://github.com/shaojintian/sso-java"> View Demo</a>
     ·
-    <a href="https://github.com/shaojintian/Best_README_template/issues">Report Bug</a>
+    <a href="https://github.com/shaojintian/sso-java/issues">Report Bug</a>
     ·
-    <a href="https://github.com/shaojintian/Best_README_template/issues">Request Feature</a>
+    <a href="https://github.com/shaojintian/sso-java/issues">Request Feature</a>
   </p>
 
 </p>
@@ -49,28 +49,20 @@ ProjectName and Description
 
 # 🚀 功能
 
-- [x] [高性能](#-性能测试) 的基于多线程/Go程网络模型的 event-loop 事件驱动
-- [x] 内置 Round-Robin 轮询负载均衡算法
-- [x] 内置 goroutine 池，由开源库 [ants](https://github.com/panjf2000/ants) 提供支持
-- [x] 内置 bytes 内存池，由开源库 [pool](https://github.com/gobwas/pool/) 提供支持
-- [x] 简洁的 APIs
-- [x] 基于 Ring-Buffer 的高效内存利用
-- [x] 支持多种网络协议：TCP、UDP、Unix Sockets
-- [x] 支持两种事件驱动机制：Linux 里的 epoll 以及 FreeBSD 里的 kqueue
-- [x] 支持异步写操作
-- [x] 灵活的事件定时器
-- [x] SO_REUSEPORT 端口重用
-- [x] 内置多种编解码器，支持对 TCP 数据流分包：LineBasedFrameCodec, DelimiterBasedFrameCodec, FixedLengthFrameCodec 和 LengthFieldBasedFrameCodec，参考自 [netty codec](https://github.com/netty/netty/tree/netty-4.1.43.Final/codec/src/main/java/io/netty/handler/codec)，而且支持自定制编解码器
-- [x] 支持 Windows 平台，基于 ~~IOCP 事件驱动机制~~ Go 标准网络库
-- [ ] 加入更多的负载均衡算法：随机、最少连接、一致性哈希等等
-- [ ] 支持 TLS
-- [ ] 实现 `gnet` 客户端
-
-
-
-
-
-
+- [x] concise: clean API, easy to go
+- [x] lightweight: less dependencies ,lower cost in deploy and join up
+- [x] single sign-on: only login in once to visit all verified & authorised app or website 
+- [x] distribution: support distributed deployment when join up SSO verified center
+- [x] HA: Server & Client both support cluster deployment ,promote availability in system
+- [x] cross-domain: support cross-domain app join up SSO verified center
+- [x] Cookie+Token : support based on Cookie and Token way to join up separately ,give independent sample to refer
+- [x] Web+APP: support web or app join up
+- [x] real-time: system login in , logout , share together between all Server and Client
+- [x] CS-structure: based on Client-Server ,eg:include  Server Verified Center and Client Protected App
+- [x] Remember password: when you dont remember pw, close browser then login state close;
+                         when you remember pw,postpone login state ;
+                         you can customize delay time (even infinity delay time). 
+- [x] Path exclude: support customize multiple excluding paths, Ant expression to exclude paths that dont need to filter
 
 
 ## 目录
@@ -93,14 +85,14 @@ ProjectName and Description
 
 ### 上手指南
 
-请将所有链接中的“shaojintian/Best_README_template”改为“your_github_name/your_repository”
+
 
 
 
 ###### 开发前的配置要求
 
-1. xxxxx x.x.x
-2. xxxxx x.x.x
+1. JDK 1.7+
+2. Redis 4.0+
 
 ###### **安装步骤**
 
@@ -108,40 +100,70 @@ ProjectName and Description
 2. Clone the repo
 
 ```sh
-git clone https://github.com/shaojintian/Best_README_template.git
+git clone https://github.com/shaojintian/sso-java.git
 ```
 
 ### 文件目录说明
 
 eg:
 
-```
-filetree 
-├── ARCHITECTURE.md
-├── LICENSE.txt
-├── README.md
-├── /account/
-├── /bbs/
-├── /docs/
-│  ├── /rules/
-│  │  ├── backend.txt
-│  │  └── frontend.txt
-├── manage.py
-├── /oa/
-├── /static/
-├── /templates/
-├── useless.md
-└── /util/
-
-```
-
-
-
 
 
 ### 开发的架构 
+![archi0](https://github.com/shaojintian/sso-java/)
 
-请阅读[ARCHITECTURE.md](https://github.com/shaojintian/Best_README_template/blob/master/ARCHITECTURE.md) 查阅为该项目的架构。
+
+## 1.1 登录流程剖析
+用户于Client端应用访问受限资源时，将会自动 redirect 到 SSO Server 进入统一登录界面
+用户登录成功之后将会为用户分配 SSO SessionId 并 redirect 返回来源Client端应用，同时附带分配的 SSO SessionId
+在Client端的SSO Filter里验证 SSO SessionId 无误，将 SSO SessionId 写入到用户浏览器Client端域名下 cookie 中
+SSO Filter验证 SSO SessionId 通过，受限资源请求放行
+
+## 1.2 注销流程剖析
+用户与Client端应用请求注销Path时，将会 redirect 到 SSO Server 自动销毁全局 SSO SessionId，实现全局销毁
+然后，访问接入SSO保护的任意Client端应用时，SSO Filter 均会拦截请求并 redirect 到 SSO Server 的统一登录界面
+
+##1.3 基于Cookie，相关概念
+登陆凭证存储：登陆成功后，用户登陆凭证被自动存储在浏览器Cookie中
+Client端校验登陆状态：通过校验请求Cookie中的是否包含用户登录凭证判断
+系统角色模型：
+SSO Server：认证中心，提供用户登陆、注销以及登陆状态校验等功能
+Client应用：受SSO保护的Client端Web应用，为用户浏览器访问提供服务
+用户：发起请求的用户，使用浏览器访问
+
+##1.4 基于Token，相关概念
+登陆凭证存储：登陆成功后，获取到登录凭证（xxl_sso_sessionid=xxx），需要主动存储，如存储在 localStorage、Sqlite 中
+Client端校验登陆状态：通过校验请求 Header参数 中的是否包含用户登录凭证（xxl_sso_sessionid=xxx）判断；因此，发送请求时需要在 Header参数 中设置登陆凭证
+系统角色模型：
+SSO Server：认证中心，提供用户登陆、注销以及登陆状态校验等功能
+Client应用：受SSO保护的Client端Web应用，为用户请求提供接口服务
+用户：发起请求的用户，如使用Android、IOS、桌面客户端等请求访问
+
+##1.5 未登录状态请求处理
+基于Cookie，未登录状态请求：
+
+页面请求：redirect 到SSO Server登录界面
+JSON请求：返回未登录的JSON格式响应数据
+数据格式：
+code：501 错误码
+msg：sso not login.
+基于Token，未登录状态请求：
+
+返回未登录的JSON格式响应数据
+数据格式：
+code：501 错误码
+msg：sso not login.
+
+##1.6 登录态自动延期
+支持自定义登录态有效期窗口，默认24H，当登录态有效期窗口过半时，自动顺延一个周期。
+
+##1.7 记住密码
+未记住密码时，关闭浏览器则登录态失效；记住密码时，登录态自动延期，在自定义延期时间的基础上，原则上可以无限延期。
+
+##1.8 路径排除
+自定义路径排除Path，允许设置多个，且支持Ant表达式。用于排除SSO客户端不需要过滤的路径。
+
+请阅读[ARCHITECTURE.md](https://github.com/shaojintian/sso-java/blob/master/ARCHITECTURE.md) 查阅为该项目的架构。
 
 ### 部署
 
@@ -196,7 +218,7 @@ E-mail: sjt@hnu.edu.cn
 
 ### 版权说明
 
-该项目签署了MIT 授权许可，详情请参阅 [LICENSE.txt](https://github.com/shaojintian/Best_README_template/blob/master/LICENSE.txt)
+该项目签署了MIT 授权许可，详情请参阅 [LICENSE.txt](https://github.com/shaojintian/sso-java/blob/master/LICENSE.txt)
 
 ### 鸣谢
 
@@ -217,16 +239,16 @@ If you like this project and want to sponsor the author, you can reward the auth
 </figure>
 <!-- links -->
 
-[your-project-path]: shaojintian/Best_README_template
-[contributors-shield]: https://img.shields.io/github/contributors/shaojintian/Best_README_template.svg?style=flat-square
-[contributors-url]: https://github.com/shaojintian/Best_README_template/graphs/contributors
-[forks-shield]: https://img.shields.io/github/forks/shaojintian/Best_README_template.svg?style=flat-square
-[forks-url]: https://github.com/shaojintian/Best_README_template/network/members
-[stars-shield]: https://img.shields.io/github/stars/shaojintian/Best_README_template.svg?style=flat-square
-[stars-url]: https://github.com/shaojintian/Best_README_template/stargazers
-[issues-shield]: https://img.shields.io/github/issues/shaojintian/Best_README_template.svg?style=flat-square
-[issues-url]: https://img.shields.io/github/issues/shaojintian/Best_README_template.svg
-[license-shield]: https://img.shields.io/github/license/shaojintian/Best_README_template.svg?style=flat-square
-[license-url]: https://github.com/shaojintian/Best_README_template/blob/master/LICENSE.txt
+[your-project-path]: shaojintian/sso-java
+[contributors-shield]: https://img.shields.io/github/contributors/shaojintian/sso-java.svg?style=flat-square
+[contributors-url]: https://github.com/shaojintian/sso-java/graphs/contributors
+[forks-shield]: https://img.shields.io/github/forks/shaojintian/sso-java.svg?style=flat-square
+[forks-url]: https://github.com/shaojintian/sso-java/network/members
+[stars-shield]: https://img.shields.io/github/stars/shaojintian/sso-java.svg?style=flat-square
+[stars-url]: https://github.com/shaojintian/sso-java/stargazers
+[issues-shield]: https://img.shields.io/github/issues/shaojintian/sso-java.svg?style=flat-square
+[issues-url]: https://img.shields.io/github/issues/shaojintian/sso-java.svg
+[license-shield]: https://img.shields.io/github/license/shaojintian/sso-java.svg?style=flat-square
+[license-url]: https://github.com/shaojintian/sso-java/blob/master/LICENSE.txt
 [linkedin-shield]: https://img.shields.io/badge/-LinkedIn-black.svg?style=flat-square&logo=linkedin&colorB=555
 [linkedin-url]: https://linkedin.com/in/shaojintian
